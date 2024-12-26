@@ -1,0 +1,77 @@
+<div class="container">
+    <h1>Administrar Estudiantes</h1>
+    <button class="btn-primary" (click)="agregarEstudiante()">Agregar Estudiante</button>
+    <div class="table-container">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Cédula</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Sexo</th>
+                    <th>Fecha Nacimiento</th>
+                    <th>Parcial 1</th>
+                    <th>Parcial 2</th>
+                    <th>Calificacion Final</th>
+                    <th>Examen de Recuperacion</th>
+                    <th>Nota Definitiva</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let estudiante of estudiantes">
+                    <td>{{ estudiante.codigo }}</td>
+                    <td>{{ estudiante.cedula }}</td>
+                    <td>{{ estudiante.nombres }}</td>
+                    <td>{{ estudiante.apellidos }}</td>
+                    <td>{{ estudiante.sexo }}</td>
+                    <td>{{ estudiante.fechaNacimiento }}</td>
+                    <td>{{ estudiante.parcial1 }}</td>
+                    <td>{{ estudiante.parcial2 }}</td>
+                    <td>{{ estudiante.calificacionFinal }}</td>
+                    <td>
+                        <input *ngIf="estudiante.estadoAprobatorio === 'Pendiente de Recuperación'" type="number" [(ngModel)]="estudiante.examenRecuperacion">
+                        <button class="btn-secondary" *ngIf="estudiante.estadoAprobatorio === 'Pendiente de Recuperación' && estudiante.examenRecuperacion !== undefined" (click)="actualizarNotaRecuperacion(estudiante.codigo, estudiante.examenRecuperacion)">Actualizar</button>
+                        <span *ngIf="estudiante.estadoAprobatorio !== 'Pendiente de Recuperación'">{{ estudiante.examenRecuperacion || '-' }}</span>
+                    </td>
+                    <td>
+                        <span *ngIf="estudiante.estadoAprobatorio !== 'Pendiente de Recuperación'">
+                            {{ estudiante.notaDefinitiva || estudiante.calificacionFinal }}
+                        </span>
+                        <span *ngIf="estudiante.estadoAprobatorio === 'Pendiente de Recuperación' && estudiante.examenRecuperacion !== undefined">
+                            {{ estudiante.notaDefinitiva }}
+                        </span>
+                        <span *ngIf="estudiante.estadoAprobatorio === 'Pendiente de Recuperación' && estudiante.examenRecuperacion === undefined">-</span>
+                    </td>
+                    <td>{{ estudiante.estadoAprobatorio }}</td>
+                    <td>
+                        <button class="btn-edit" (click)="editarEstudiante(estudiante.codigo)">Editar</button>
+                        <button class="btn-delete" (click)="eliminarEstudiante(estudiante.codigo)">Eliminar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="consultas">
+        <h2 class="subtitle">Consultas</h2>
+        <p>Porcentaje de estudiantes aprobados: <span class="highlight">{{ porcentajeAprobados.toFixed(2) }}%</span></p>
+        <p>Porcentaje de estudiantes reprobados: <span class="highlight">{{ porcentajeReprobados.toFixed(2) }}%</span></p>
+        <p>Porcentaje de estudiantes aprobados (Masculino): <span class="highlight">{{ porcentajeAprobadosMasculino.toFixed(2) }}%</span></p>
+        <p>Porcentaje de estudiantes aprobados (Femenino): <span class="highlight">{{ porcentajeAprobadosFemenino.toFixed(2) }}%</span></p>
+        <p>Promedio general del curso: <span class="highlight">{{ promedioGeneral.toFixed(2) }}</span></p>
+        <h4 class="subtitle">Estudiante con mayor nota por encima del promedio general:</h4>
+        <p *ngIf="estudianteMayorNota">
+            {{ estudianteMayorNota.nombres }} {{ estudianteMayorNota.apellidos }} - Nota: {{ estudianteMayorNota.notaDefinitiva || estudianteMayorNota.calificacionFinal }}
+        </p>
+        <p *ngIf="!estudianteMayorNota">No hay estudiantes con nota mayor al promedio general.</p>
+    </div>
+
+    <!-- Incluir el modal de AgregarComponent -->
+    <app-agregar [mostrarModal]="mostrarModalAgregar" (cerrarModalEvent)="cerrarModalAgregar()"></app-agregar>
+
+    <!-- Incluir el modal de ModificarComponent -->
+    <app-modificar [mostrarModal]="mostrarModalModificar" [estudiante]="estudianteSeleccionado" (cerrarModalEvent)="cerrarModalModificar()"></app-modificar>
+</div>
